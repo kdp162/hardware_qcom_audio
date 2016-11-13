@@ -238,6 +238,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libhardware \
 	libtinyalsa \
 	libtinycompress \
+        libtfa9890 \
 	libaudioroute \
 	libdl \
 	libexpat \
