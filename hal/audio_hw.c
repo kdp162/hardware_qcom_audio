@@ -3310,6 +3310,9 @@ static int out_set_parameters(struct audio_stream *stream, const char *kvpairs)
     parms = str_parms_create_str(kvpairs);
     if (!parms)
         goto error;
+
+    amplifier_out_set_parameters(parms);
+
     err = str_parms_get_str(parms, AUDIO_PARAMETER_STREAM_ROUTING, value, sizeof(value));
     if (err >= 0) {
         val = atoi(value);
@@ -4730,6 +4733,9 @@ static int in_set_parameters(struct audio_stream *stream, const char *kvpairs)
 
     if (!parms)
         goto error;
+
+    amplifier_in_set_parameters(parms);
+
     lock_input_stream(in);
     pthread_mutex_lock(&adev->lock);
 
@@ -6443,6 +6449,7 @@ static int adev_open_input_stream(struct audio_hw_device *dev,
         in->config.channels = channel_count;
         in->config.rate = config->sample_rate;
         in->sample_rate = config->sample_rate;
+#ifdef SSR_ENABLED
     } else if (!audio_extn_check_and_set_multichannel_usecase(adev,
                 in, config, &channel_mask_updated)) {
         if (channel_mask_updated == true) {
@@ -6452,6 +6459,7 @@ static int adev_open_input_stream(struct audio_hw_device *dev,
             goto err_open;
         }
         ALOGD("%s: created surround sound session succesfully",__func__);
+#endif
     } else if (audio_extn_compr_cap_enabled() &&
             audio_extn_compr_cap_format_supported(config->format) &&
             (in->dev->mode != AUDIO_MODE_IN_COMMUNICATION)) {
